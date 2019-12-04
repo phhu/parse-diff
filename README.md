@@ -11,7 +11,11 @@ Simple unified diff parser for nodejs
 ## JavaScript Usage Example
 
 ```javascript
-var parse = require('parse-diff');
+// optional content transform function - defaults is removal of first character. Runs on add / del / normal lines 
+var config = {
+	// contentTransform: line=>(''+line).slice(1)
+};
+var parse = require('parse-diff')(config);
 var diff = ''; // input diff string
 var files = parse(diff);
 console.log(files.length); // number of patched files

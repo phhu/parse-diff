@@ -1,4 +1,8 @@
-const parse = require("../index");
+
+const config = {
+  contentTransform: (line) => ('' + line).slice(1)
+};
+const parse = require("../index")(config);
 
 describe("diff parser", function() {
   it("should parse null", () => {
@@ -32,8 +36,8 @@ index 123..456 789
     const chunk = file.chunks[0];
     expect(chunk.content).toBe("@@ -1,2 +1,2 @@");
     expect(chunk.changes.length).toBe(2);
-    expect(chunk.changes[0].content).toBe("- line1");
-    expect(chunk.changes[1].content).toBe("+ line2");
+    expect(chunk.changes[0].content).toBe(config.contentTransform("- line1"));
+    expect(chunk.changes[1].content).toBe(config.contentTransform("+ line2"));
   });
 
   it("should parse diff with new file mode line", function() {
@@ -55,8 +59,8 @@ index 0000000..db81be4
     expect(file.to).toBe("test");
     expect(file.chunks[0].content).toBe("@@ -0,0 +1,2 @@");
     expect(file.chunks[0].changes.length).toBe(2);
-    expect(file.chunks[0].changes[0].content).toBe("+line1");
-    expect(file.chunks[0].changes[1].content).toBe("+line2");
+    expect(file.chunks[0].changes[0].content).toBe(config.contentTransform("+line1"));
+    expect(file.chunks[0].changes[1].content).toBe(config.contentTransform("+line2"));
   });
 
   it("should parse diff with deleted file mode line", function() {
@@ -78,8 +82,8 @@ index db81be4..0000000
     expect(file.to).toBe("/dev/null");
     expect(file.chunks[0].content).toBe("@@ -1,2 +0,0 @@");
     expect(file.chunks[0].changes.length).toBe(2);
-    expect(file.chunks[0].changes[0].content).toBe("-line1");
-    expect(file.chunks[0].changes[1].content).toBe("-line2");
+    expect(file.chunks[0].changes[0].content).toBe(config.contentTransform("-line1"));
+    expect(file.chunks[0].changes[1].content).toBe(config.contentTransform("-line2"));
   });
 
   it("should parse diff with single line files", function() {
@@ -107,7 +111,7 @@ index 0000000..db81be4
     expect(file.to).toBe("/dev/null");
     expect(file.chunks[0].content).toBe("@@ -1 +0,0 @@");
     expect(file.chunks[0].changes.length).toBe(1);
-    expect(file.chunks[0].changes[0].content).toBe("-line1");
+    expect(file.chunks[0].changes[0].content).toBe(config.contentTransform("-line1"));
     expect(file.chunks[0].changes[0].type).toBe("del");
     file = files[1];
     expect(file.new).toBeTruthy();
@@ -119,7 +123,7 @@ index 0000000..db81be4
     expect(file.chunks[0].newStart).toBe(1);
     expect(file.chunks[0].newLines).toBe(1);
     expect(file.chunks[0].changes.length).toBe(1);
-    expect(file.chunks[0].changes[0].content).toBe("+line1");
+    expect(file.chunks[0].changes[0].content).toBe(config.contentTransform("+line1"));
     expect(file.chunks[0].changes[0].type).toBe("add");
   });
 
@@ -147,15 +151,15 @@ index 123..456 789
     expect(file.to).toBe("file1");
     expect(file.chunks[0].content).toBe("@@ -1,2 +1,2 @@");
     expect(file.chunks[0].changes.length).toBe(2);
-    expect(file.chunks[0].changes[0].content).toBe("- line1");
-    expect(file.chunks[0].changes[1].content).toBe("+ line2");
+    expect(file.chunks[0].changes[0].content).toBe(config.contentTransform("- line1"));
+    expect(file.chunks[0].changes[1].content).toBe(config.contentTransform("+ line2"));
     file = files[1];
     expect(file.from).toBe("file2");
     expect(file.to).toBe("file2");
     expect(file.chunks[0].content).toBe("@@ -1,3 +1,3 @@");
     expect(file.chunks[0].changes.length).toBe(2);
-    expect(file.chunks[0].changes[0].content).toBe("- line1");
-    expect(file.chunks[0].changes[1].content).toBe("+ line2");
+    expect(file.chunks[0].changes[0].content).toBe(config.contentTransform("- line1"));
+    expect(file.chunks[0].changes[1].content).toBe(config.contentTransform("+ line2"));
   });
 
   it("should parse diff with EOF flag", function() {
@@ -177,8 +181,8 @@ index 123..456 789
     const chunk = file.chunks[0];
     expect(chunk.content).toBe("@@ -1,2 +1,2 @@");
     expect(chunk.changes.length).toBe(3);
-    expect(chunk.changes[0].content).toBe("- line1");
-    expect(chunk.changes[1].content).toBe("+ line2");
+    expect(chunk.changes[0].content).toBe(config.contentTransform("- line1"));
+    expect(chunk.changes[1].content).toBe(config.contentTransform("+ line2"));
     expect(chunk.changes[2].type).toBe("add");
     expect(chunk.changes[2].content).toBe("\\ No newline at end of file");
   });
@@ -338,7 +342,7 @@ rename to My Folder/a/File
     const chunk = file.chunks[0];
     expect(chunk.content).toBe("@@ -1,2 +1,2 @@");
     expect(chunk.changes.length).toBe(2);
-    expect(chunk.changes[0].content).toBe("- line1");
-    expect(chunk.changes[1].content).toBe("+ line2");
+    expect(chunk.changes[0].content).toBe(config.contentTransform("- line1"));
+    expect(chunk.changes[1].content).toBe(config.contentTransform("+ line2"));
   });
 });
