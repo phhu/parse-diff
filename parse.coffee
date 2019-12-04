@@ -1,9 +1,9 @@
 # parses unified diff
 # http://www.gnu.org/software/diffutils/manual/diffutils.html#Unified-Format
-module.exports = (input) ->
+module.exports = (config={}) -> (input) ->
   return [] if not input
   return [] if input.match /^\s+$/
-
+  config.contentTransform ?= (line) -> ('' + line).slice(1)
   lines = input.split '\n'
   return [] if lines.length == 0
 
@@ -66,12 +66,22 @@ module.exports = (input) ->
 
   del = (line) ->
     return unless current
-    current.changes.push {type:'del', del:true, ln:ln_del++, content:line}
+    current.changes.push {
+      type:'del'
+      del:true
+      ln:ln_del++
+      content:config.contentTransform(line)
+    }
     file.deletions++
 
   add = (line) ->
     return unless current
-    current.changes.push {type:'add', add:true, ln:ln_add++, content:line}
+    current.changes.push {
+      type:'add'
+      add:true
+      ln:ln_add++
+      content:config.contentTransform(line)
+    }
     file.additions++
 
   normal = (line) ->
@@ -81,7 +91,7 @@ module.exports = (input) ->
       normal: true
       ln1: ln_del++
       ln2: ln_add++
-      content: line
+      content: config.contentTransform(line)
     }
 
   eof = (line) ->
