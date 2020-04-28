@@ -135,7 +135,9 @@ module.exports = function(config = {}) {
       });
     };
     // todo beter regexp to avoid detect normal line starting with diff
-    schema = [[/^\s+/, normal], [/^diff\s/, start], [/^new file mode \d+$/, new_file], [/^deleted file mode \d+$/, deleted_file], [/^index\s[\da-zA-Z]+\.\.[\da-zA-Z]+(\s(\d+))?$/, index], [/^---\s/, from_file], [/^\+\+\+\s/, to_file], [/^@@\s+\-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk], [/^-/, del], [/^\+/, add], [/^\\ No newline at end of file$/, eof]];
+    // might be good to set an inChucnk or inDiff flag too
+    // and only process del and add when inChunk true
+    schema = [[/^\s+/, normal], [/^diff\s--git\s[ab]/, start], [/^new file mode \d+$/, new_file], [/^deleted file mode \d+$/, deleted_file], [/^index\s[\da-zA-Z]+\.\.[\da-zA-Z]+(\s(\d+))?$/, index], [/^---\s[ab]\//, from_file], [/^\+\+\+\s[ab]\//, to_file], [/^@@\s+\-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk], [/^-/, del], [/^\+/, add], [/^\\ No newline at end of file$/, eof]];
     parse = function(line) {
       var j, len, m, p;
       for (j = 0, len = schema.length; j < len; j++) {

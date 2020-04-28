@@ -105,16 +105,23 @@ module.exports = (config={}) -> (input) ->
       ln: recentChange.ln
       content: line
     }
+  
+  inChunkMode = false
+  always = ()->true
+  inChunk = ()->inChunkMode
+  inDiff = ()->!inChunkMode
 
   schema = [
     # todo beter regexp to avoid detect normal line starting with diff
+    # might be good to set an inChucnk or inDiff flag too
+    # and only process del and add when inChunk true
     [/^\s+/, normal],
-    [/^diff\s/, start],
+    [/^diff\s--git\s[ab]/, start],
     [/^new file mode \d+$/, new_file],
     [/^deleted file mode \d+$/, deleted_file],
     [/^index\s[\da-zA-Z]+\.\.[\da-zA-Z]+(\s(\d+))?$/, index],
-    [/^---\s/, from_file],
-    [/^\+\+\+\s/, to_file],
+    [/^---\s[ab]\//, from_file],
+    [/^\+\+\+\s[ab]\//, to_file],
     [/^@@\s+\-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk],
     [/^-/, del],
     [/^\+/, add],
