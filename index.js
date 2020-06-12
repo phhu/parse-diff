@@ -6,7 +6,7 @@ var defaultToWhiteSpace, escapeRegExp, ltrim, makeString, parseFile, parseFileFa
 
 module.exports = function(config = {}) {
   return function(input) {
-    var add, chunk, current, del, deleted_file, eof, file, files, from_file, index, j, len, line, lines, ln_add, ln_del, new_file, normal, parse, restart, schema, start, to_file;
+    var add, always, chunk, current, del, deleted_file, eof, file, files, from_file, inChunk, inChunkMode, inDiff, index, j, len, line, lines, ln_add, ln_del, new_file, normal, parse, restart, schema, start, to_file;
     if (!input) {
       return [];
     }
@@ -15,7 +15,7 @@ module.exports = function(config = {}) {
     }
     if (config.contentTransform == null) {
       config.contentTransform = function(line) {
-        return ('' + line).slice(1);
+        return line; // ('' + line).slice(1)
       };
     }
     lines = input.split('\n');
@@ -133,6 +133,16 @@ module.exports = function(config = {}) {
         ln: recentChange.ln,
         content: line
       });
+    };
+    inChunkMode = false;
+    always = function() {
+      return true;
+    };
+    inChunk = function() {
+      return inChunkMode;
+    };
+    inDiff = function() {
+      return !inChunkMode;
     };
     // todo beter regexp to avoid detect normal line starting with diff
     // might be good to set an inChucnk or inDiff flag too

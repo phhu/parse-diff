@@ -3,7 +3,7 @@
 module.exports = (config={}) -> (input) ->
   return [] if not input
   return [] if input.match /^\s+$/
-  config.contentTransform ?= (line) -> ('' + line).slice(1)
+  config.contentTransform ?= (line) -> line # ('' + line).slice(1)
   lines = input.split '\n'
   return [] if lines.length == 0
 
